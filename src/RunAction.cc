@@ -23,7 +23,7 @@
 #include "G4ParticleDefinition.hh"
 #include <stdexcept>
 #include <limits>
-#define BINS 3
+#define BINS 2
 #define RATIO 1000
 
 namespace { G4Mutex SteppingMutexLock = G4MUTEX_INITIALIZER; }
@@ -70,10 +70,10 @@ void RunAction::BeginOfRunAction(const G4Run*)
 	size_t XVoxNum=Detector->GetNoVoxelsX();
 	size_t YVoxNum=Detector->GetNoVoxelsY();
 	size_t ZVoxNum=Detector->GetNoVoxelsZ();
-	DoseSpectrum = new G4double***[YVoxNum];
+	DoseSpectrum = new G4double***[XVoxNum];
 	for (size_t i=0;i<XVoxNum;++i)
 	{
-		DoseSpectrum[i]= new G4double**[XVoxNum];
+		DoseSpectrum[i]= new G4double**[YVoxNum];
 		for (size_t j=0;j<YVoxNum;++j)
 		{
 			DoseSpectrum[i][j]=new G4double*[ZVoxNum];
@@ -99,7 +99,6 @@ void RunAction::EndOfRunAction(const G4Run*)
 
 	ofstream DoseMatrix{"../../OUTPUTDATA/DoseMatrix.dat",ofstream::binary};
 	ofstream DoseUncertainty{"../../OUTPUTDATA/DoseUncertainty.dat",ofstream::binary};
-	ofstream LET{"../../OUTPUTDATA/DoseUncertainty.dat",ofstream::binary};
 	DoseMatrix.write(reinterpret_cast<char*>(&XVoxNum),sizeof(G4int));
 	DoseMatrix.write(reinterpret_cast<char*>(&YVoxNum),sizeof(G4int));
 	DoseMatrix.write(reinterpret_cast<char*>(&ZVoxNum),sizeof(G4int));
@@ -108,9 +107,6 @@ void RunAction::EndOfRunAction(const G4Run*)
 	DoseUncertainty.write(reinterpret_cast<char*>(&YVoxNum),sizeof(G4int));
 	DoseUncertainty.write(reinterpret_cast<char*>(&ZVoxNum),sizeof(G4int));
         
-	LET.write(reinterpret_cast<char*>(&XVoxNum),sizeof(G4int));
-	LET.write(reinterpret_cast<char*>(&YVoxNum),sizeof(G4int));
-	LET.write(reinterpret_cast<char*>(&ZVoxNum),sizeof(G4int));
 	G4double S, DoseSquare, VoxelDose=-1, VoxelMass=0;
         G4int N=ThePlan->GetNoProtons()/RATIO;
 	VoxelMass=Detector->GetVoxelMass();
