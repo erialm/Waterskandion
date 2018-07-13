@@ -22,6 +22,8 @@
 
 #ifdef G4UI_USE
 #include "G4UIExecutive.hh"
+#include "G4UIterminal.hh"
+#include "G4UIsession.hh"
 #endif
 #include "Shielding.hh"
 
@@ -64,11 +66,12 @@ int main(int argc,char** argv)
   
   if (argc==1)
     {
-      runManager->Initialize();
+      //runManager->Initialize();
 #ifdef G4UI_USE
-      G4UIExecutive* ui = new G4UIExecutive(argc, argv);
+       G4UIExecutive* ui = new G4UIExecutive(argc, argv);
+       //G4UIsession* ui = new G4UIterminal;
 #ifdef G4VIS_USE
-      UImanager->ApplyCommand("/control/execute vis.mac");
+      UImanager->ApplyCommand("/control/execute setupvis.mac");
 #endif
       ui->SessionStart();
       delete ui;

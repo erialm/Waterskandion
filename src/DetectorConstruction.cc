@@ -69,7 +69,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
                           "Target");    
 
 
-  G4double TargetZPos=TargetDimensions.z()/2*cm-IsoDepth*cm;	//position Target so as to extend IsoDepth cm beyond world Z=0
+  G4double TargetZPos=-(TargetDimensions.z()/2*cm-IsoDepth*cm);	//position Target so as to extend IsoDepth cm beyond world Z=0
   new G4PVPlacement(0,  
 			    G4ThreeVector(0,0,TargetZPos),  
                     "Target", 
@@ -111,7 +111,8 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   G4LogicalVolume* logicVoxel = new G4LogicalVolume(solidVoxel,H2O,"Voxel");
   VoxelMass=logicVoxel->GetMass()/kg; //convert to kg immediately
   
-
+  G4cout << VoxelSize.x() << ' ' << VoxelSize.y() << ' ' << VoxelSize.z() << ' ' << NoVoxels << '\n';
+  G4cout << NoVoxelsX << ' ' << NoVoxelsY << ' ' << NoVoxelsZ << '\n';
   NestedParameterisation* Parameterisation = new NestedParameterisation(VoxelSize,NoVoxelsZ,H2O,TargetDimensions.z());
 
   new G4PVParameterised("PhantomVoxel",      // their name

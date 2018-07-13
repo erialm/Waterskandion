@@ -25,7 +25,6 @@
 #include <limits>
 #define BINS 2
 #define RATIO 1000
-
 namespace { G4Mutex SteppingMutexLock = G4MUTEX_INITIALIZER; }
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 RunAction::RunAction(G4String PlanPath)
@@ -122,7 +121,6 @@ void RunAction::EndOfRunAction(const G4Run*)
                                 S=sqrt(S)/sqrt(N);	//standard deviation of the mean energy deposition;
 				S=N*S*MeV2J/VoxelMass*NormFactor; //Standard deviation of the total voxel dose
 				
-	
 				VoxelDose*=MeV2J/VoxelMass*NormFactor;
 				DoseMatrix.write(reinterpret_cast<char*>(&VoxelDose),sizeof(G4double));
 				if (VoxelDose>0) S=S/VoxelDose*100;
@@ -132,8 +130,4 @@ void RunAction::EndOfRunAction(const G4Run*)
 		}
 	}
 }
-
-
-
-
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
