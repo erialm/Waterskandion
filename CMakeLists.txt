@@ -43,7 +43,6 @@ target_link_libraries(WaterSkandion ${Geant4_LIBRARIES})
 # relies on these scripts being in the current working directory.
 #
 set(SKANDIONTOOL_SCRIPTS
-   run.mac
    vis.mac
    )
 

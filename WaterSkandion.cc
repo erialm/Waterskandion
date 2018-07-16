@@ -13,7 +13,7 @@
 #include "DetectorConstruction.hh"
 #include "G4GenericPhysicsList.hh"
 #include "ActionInitialization.hh"
-#include "PhysicsList.hh"
+//#include "PhysicsList.hh"
 #include "G4tgrMessenger.hh"
 
 #ifdef G4VIS_USE
@@ -22,10 +22,12 @@
 
 #ifdef G4UI_USE
 #include "G4UIExecutive.hh"
-#include "G4UIterminal.hh"
-#include "G4UIsession.hh"
 #endif
 #include "Shielding.hh"
+#include "G4EmParameters.hh"
+#include "G4PhysListFactory.hh"
+#include "G4VModularPhysicsList.hh"
+
 
 //=================================================================================
 
@@ -49,8 +51,12 @@ int main(int argc,char** argv)
   
     
  // Set user action classes
+// runManager->SetUserInitialization(new PhysicsList());
+ G4PhysListFactory factory;
+ G4VModularPhysicsList* physicsList = factory.GetReferencePhysList("QGSP_BERT_EMZ");
+ physicsList->SetDefaultCutValue(10.*m);
+ runManager->SetUserInitialization(physicsList);
  runManager->SetUserInitialization(new DetectorConstruction()); 
- runManager->SetUserInitialization(new PhysicsList());
  runManager->SetUserInitialization(new ActionInitialization("../../INPUTDATA/Plan.txt"));
    
   
@@ -69,7 +75,6 @@ int main(int argc,char** argv)
       //runManager->Initialize();
 #ifdef G4UI_USE
        G4UIExecutive* ui = new G4UIExecutive(argc, argv);
-       //G4UIsession* ui = new G4UIterminal;
 #ifdef G4VIS_USE
       UImanager->ApplyCommand("/control/execute setupvis.mac");
 #endif
@@ -82,6 +87,8 @@ int main(int argc,char** argv)
       G4String command = "/control/execute ";
       G4String fileName = argv[1];
       G4int NoProtons=runManager->GetNumberOfEventsToBeProcessed();
+      G4EmParameters* EM = G4EmParameters::Instance();
+      EM->SetNumberOfBinsPerDecade(100);
       G4cout << "Running a total number of : " << NoProtons << " protons" << G4endl;
       UImanager->ApplyCommand(command+fileName);
       runManager->Initialize();
@@ -96,3 +103,4 @@ int main(int argc,char** argv)
   
   return 0;
 }
+

@@ -16,6 +16,8 @@
 #include "G4TouchableHandle.hh"
 #include "G4Material.hh"
 #include "RunAction.hh"
+#include "G4ParticleDefinition.hh"
+#include "G4Electron.hh"
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 SteppingAction::SteppingAction(RunAction* MasterRun)
@@ -38,7 +40,11 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
 		Voxel=LogicStore->GetVolume("Voxel");
 	}
 	G4LogicalVolume* CurrentVolume=step->GetTrack()->GetVolume()->GetLogicalVolume();
-	if (CurrentVolume!=Voxel) return;	//Don't do anything if particle is not in target volume
+	if (CurrentVolume!=Voxel) 
+        {
+                if (step->GetTrack()->GetParticleDefinition()==G4Electron::ElectronDefinition()) step->GetTrack()->SetTrackStatus(fStopAndKill);
+                return;	//Don't do anything if particle is not in target volume
+        }
 	G4TouchableHandle Touchable = step->GetPreStepPoint()->GetTouchableHandle();
         G4int x=Touchable->GetReplicaNumber(2);
 	G4int y=Touchable->GetReplicaNumber(1);

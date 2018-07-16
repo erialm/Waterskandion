@@ -53,10 +53,6 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
                                   false,      //no boolean operation
                                   0);      //copy number
 
-  G4double ChargedCutWorld=10*m;
-  G4UserLimits* WorldLimiter=new G4UserLimits;
-  WorldLimiter->SetUserMinRange(ChargedCutWorld);
-  logicWorld->SetUserLimits(WorldLimiter);
 
   G4Box* targetSolid = new G4Box("Target",              
                                  TargetDimensions.x()/2*cm,
@@ -77,8 +73,6 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
                     physiWorld,  
                     false,        
                     0);           
-
-
   using std::runtime_error;
   if (std::trunc((TargetDimensions.x()*cm)/(VoxelSize.x()*mm))==(TargetDimensions.x()*cm)/(VoxelSize.x()*mm)) 
 	NoVoxelsX=(TargetDimensions.x()*cm)/(VoxelSize.x()*mm);
@@ -96,7 +90,13 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   size_t NoVoxels=NoVoxelsX*NoVoxelsY*NoVoxelsZ;
   if (!NoVoxels) throw runtime_error("Error: non-positive number of voxels! Exiting...");
 
-  
+  G4ProductionCuts* TargetCut = new G4ProductionCuts;
+  TargetCut->SetProductionCut(0.1*mm);
+  G4Region* TargetRegion = new G4Region("Target");
+  logicTarget->SetRegion(TargetRegion);
+  TargetRegion->AddRootLogicalVolume(logicTarget);
+  TargetRegion->SetProductionCuts(TargetCut);     
+
   G4VSolid* solidXReplicas = 
   new G4Box("XReplicas",VoxelSize.x()/2.,TargetDimensions.y()/2.*cm,TargetDimensions.z()/2.*cm);
   G4LogicalVolume* logicXReplicas = new G4LogicalVolume(solidXReplicas,H2O,"XReplicas");
@@ -111,8 +111,6 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   G4LogicalVolume* logicVoxel = new G4LogicalVolume(solidVoxel,H2O,"Voxel");
   VoxelMass=logicVoxel->GetMass()/kg; //convert to kg immediately
   
-  G4cout << VoxelSize.x() << ' ' << VoxelSize.y() << ' ' << VoxelSize.z() << ' ' << NoVoxels << '\n';
-  G4cout << NoVoxelsX << ' ' << NoVoxelsY << ' ' << NoVoxelsZ << '\n';
   NestedParameterisation* Parameterisation = new NestedParameterisation(VoxelSize,NoVoxelsZ,H2O,TargetDimensions.z());
 
   new G4PVParameterised("PhantomVoxel",      // their name
