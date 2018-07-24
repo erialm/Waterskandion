@@ -19,18 +19,18 @@ class NestedParameterisation: public G4VNestedParameterisation
     G4Material* ComputeMaterial(G4VPhysicalVolume *currentVol,
                                 const G4int repNo,
                                 const G4VTouchable *parentTouch=0
-                                        );
+                                );
     G4int GetNumberOfMaterials() const;
     G4Material* GetMaterial(G4int idx) const;
     void ComputeTransformation(const G4int no,G4VPhysicalVolume *currentPV) const;
     void ComputeDimensions(G4Box &,const G4int,const G4VPhysicalVolume *) const;
 
   private:
-    G4ThreeVector VoxelSize;
-    G4int NoZVoxels;
-    std::vector<G4double> ZPositions;
     G4Material* Material;
+    G4int NoZVoxels;
+    G4ThreeVector VoxelSize;
     G4double ZLength;
+    std::vector<G4double> ZPositions;
   void ComputeDimensions (G4Trd&,const G4int,const G4VPhysicalVolume*)
     const {}
   void ComputeDimensions (G4Trap&,const G4int,const G4VPhysicalVolume*)

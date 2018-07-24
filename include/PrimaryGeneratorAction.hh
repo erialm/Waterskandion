@@ -33,9 +33,9 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
     void SampleSpotParameters(G4int, G4int);
   private:
     static constexpr G4double Pi=3.14159265359;
+    G4ParticleGun* TheParticleGun;
     ProtonPlan* ThePlan;
     BeamModel* TheModel;
-    G4ParticleGun* TheParticleGun;
     StartParameters SampledParameters;
 };
 #endif

@@ -46,7 +46,7 @@ void BeamModel::ComputeEnergySpread()
 	for (G4int i=0;i<ThePlan->GetNoLayers();++i)
 	{
 		E=SimStartEnergies[i];
-		EnergySpread=-3.0147e-07*pow(E,3)+7.5117e-05*pow(E,2)+1.2467e-03*E+2.0982e-01;
+		EnergySpread=-4.6926e-07*pow(E,3)+1.5883e-04*pow(E,2)-1.1689e-02*E+7.2174e-01;
 		EnergySpreads.push_back(EnergySpread);
 	}
 	

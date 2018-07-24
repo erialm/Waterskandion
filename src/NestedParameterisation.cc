@@ -4,7 +4,7 @@ NestedParameterisation::NestedParameterisation(G4ThreeVector VoxS,G4int ZNum,G4M
 {
 	ZPositions.clear();
 	ZPositions.resize(NoZVoxels);
-	for (size_t i=0;i<NoZVoxels;++i)
+	for (G4int i=0;i<NoZVoxels;++i)
 	{
 		 ZPositions[i]=(-ZLength*5+VoxelSize.z()/2+VoxelSize.z()*i);
 	}

@@ -39,10 +39,10 @@ public:
   G4double GetVoxelMass() const {return VoxelMass;} 
                          
 private:
-  DetectorConstructionMessenger Messenger;
   G4ThreeVector      TargetDimensions;
-  G4ThreeVector	     VoxelSize;
+  DetectorConstructionMessenger Messenger;
   G4double 	     IsoDepth;
+  G4ThreeVector	     VoxelSize;
   G4double	     VoxelMass;
   G4int 	     NoVoxelsX,NoVoxelsY,NoVoxelsZ;
   

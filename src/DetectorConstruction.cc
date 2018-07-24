@@ -12,7 +12,7 @@
 
 DetectorConstruction::DetectorConstruction(G4double TX, G4double TY, G4double TZ, G4double PZ, G4double VX, G4double VY, G4double VZ)
 :G4VUserDetectorConstruction(), TargetDimensions{TX,TY,TZ}, Messenger{this}, IsoDepth{PZ}, 
-VoxelSize{VX,VY,VZ},NoVoxelsX{0},NoVoxelsY{0},NoVoxelsZ{0}
+VoxelSize{VX,VY,VZ},VoxelMass{0.},NoVoxelsX{0},NoVoxelsY{0},NoVoxelsZ{0}
 {}  
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -90,12 +90,12 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   size_t NoVoxels=NoVoxelsX*NoVoxelsY*NoVoxelsZ;
   if (!NoVoxels) throw runtime_error("Error: non-positive number of voxels! Exiting...");
 
-  G4ProductionCuts* TargetCut = new G4ProductionCuts;
+  /*G4ProductionCuts* TargetCut = new G4ProductionCuts;
   TargetCut->SetProductionCut(0.1*mm);
   G4Region* TargetRegion = new G4Region("Target");
   logicTarget->SetRegion(TargetRegion);
   TargetRegion->AddRootLogicalVolume(logicTarget);
-  TargetRegion->SetProductionCuts(TargetCut);     
+  TargetRegion->SetProductionCuts(TargetCut);     */
 
   G4VSolid* solidXReplicas = 
   new G4Box("XReplicas",VoxelSize.x()/2.,TargetDimensions.y()/2.*cm,TargetDimensions.z()/2.*cm);

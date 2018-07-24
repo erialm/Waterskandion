@@ -24,11 +24,11 @@
 #include <stdexcept>
 #include <limits>
 #define BINS 2
-#define RATIO 1000
+#define RATIO 250
 namespace { G4Mutex SteppingMutexLock = G4MUTEX_INITIALIZER; }
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 RunAction::RunAction(G4String PlanPath)
-: G4UserRunAction(), ThePlan{new ProtonPlan(PlanPath)}, TheModel{new BeamModel(ThePlan)}, TotalNoProtons{0.}, SimFraction{0.}
+: G4UserRunAction(), ThePlan{new ProtonPlan(PlanPath)}, TheModel{new BeamModel(ThePlan)}, TotalNoProtons{0.}, SimFraction{0.}, NormFactor(0.), DoseSpectrum{nullptr}
 {
 	#ifdef G4MULTITHREADED	
 	G4MTRunManager* RunManager=G4MTRunManager::GetMasterRunManager();

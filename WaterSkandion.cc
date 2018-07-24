@@ -53,7 +53,7 @@ int main(int argc,char** argv)
  // Set user action classes
 // runManager->SetUserInitialization(new PhysicsList());
  G4PhysListFactory factory;
- G4VModularPhysicsList* physicsList = factory.GetReferencePhysList("QGSP_BERT_EMZ");
+ G4VModularPhysicsList* physicsList = factory.GetReferencePhysList("QGSP_INCLXX_EMZ");
  physicsList->SetDefaultCutValue(10.*m);
  runManager->SetUserInitialization(physicsList);
  runManager->SetUserInitialization(new DetectorConstruction()); 
