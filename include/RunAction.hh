@@ -22,10 +22,10 @@ class RunAction : public G4UserRunAction
     void AddDose(G4int, G4int, G4int, G4double) noexcept;
  private:
     static constexpr G4double MeV2J=1.60217662e-13;
-    G4double TotalNoProtons;
-    G4double SimFraction;
     ProtonPlan* ThePlan;
     BeamModel* TheModel;
+    G4double TotalNoProtons;
+    G4double SimFraction;
     G4double NormFactor;
     G4double**** DoseSpectrum; 	//4D array; (x,y,z,D)
 };
