@@ -53,8 +53,7 @@ int main(int argc,char** argv)
  // Set user action classes
 // runManager->SetUserInitialization(new PhysicsList());
  G4PhysListFactory factory;
- G4VModularPhysicsList* physicsList = factory.GetReferencePhysList("QGSP_INCLXX_EMZ");
- physicsList->SetDefaultCutValue(10.*m);
+ G4VModularPhysicsList* physicsList = factory.GetReferencePhysList("QBBC_EMZ");
  runManager->SetUserInitialization(physicsList);
  runManager->SetUserInitialization(new DetectorConstruction()); 
  runManager->SetUserInitialization(new ActionInitialization("../../INPUTDATA/Plan.txt"));
@@ -92,6 +91,8 @@ int main(int argc,char** argv)
       G4cout << "Running a total number of : " << NoProtons << " protons" << G4endl;
       UImanager->ApplyCommand(command+fileName);
       runManager->Initialize();
+      physicsList->SetCutValue(10.*m,"e+");
+      physicsList->SetCutValue(10.*m,"e-");
       runManager->BeamOn(NoProtons);
     }
   
