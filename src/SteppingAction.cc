@@ -20,8 +20,8 @@
 #include "G4Electron.hh"
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-SteppingAction::SteppingAction(RunAction* MasterRun)
-: G4UserSteppingAction(), Voxel{nullptr}, TheRun{MasterRun}
+SteppingAction::SteppingAction(EventAction* TheEvent)
+: G4UserSteppingAction(), Voxel{nullptr}, Event{TheEvent}
 {
 }
 
@@ -46,9 +46,7 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
 	G4int y=Touchable->GetReplicaNumber(1);
 	G4int z=Touchable->GetReplicaNumber(0);
 	G4double EnergyDeposition=step->GetTotalEnergyDeposit();
-	
-	if (EnergyDeposition>0) TheRun->AddDose(x,y,z,EnergyDeposition);
-	
+	Event->AddStepDose(x,y,z,EnergyDeposition);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

@@ -27,6 +27,7 @@
 #include "G4EmParameters.hh"
 #include "G4PhysListFactory.hh"
 #include "G4VModularPhysicsList.hh"
+#include <limits>
 
 
 //=================================================================================
@@ -40,9 +41,9 @@ int main(int argc,char** argv)
 #ifdef G4MULTITHREADED
   
   G4MTRunManager* runManager = new G4MTRunManager;
-  G4int nthreads=G4Threading::G4GetNumberOfCores();
-  runManager->SetNumberOfThreads(nthreads);
-  G4cout << "\n\n\tRunning in multithreaded mode with " << nthreads 
+  G4int NoThreads=G4Threading::G4GetNumberOfCores();
+  runManager->SetNumberOfThreads(NoThreads);
+  G4cout << "\n\n\tRunning in multithreaded mode with " << NoThreads
          << " threads\n\n" << G4endl;
 #else
   G4RunManager* runManager = new G4RunManager;
@@ -85,15 +86,13 @@ int main(int argc,char** argv)
     {
       G4String command = "/control/execute ";
       G4String fileName = argv[1];
-      G4int NoProtons=runManager->GetNumberOfEventsToBeProcessed();
       G4EmParameters* EM = G4EmParameters::Instance();
       EM->SetNumberOfBinsPerDecade(100);
-      G4cout << "Running a total number of : " << NoProtons << " protons" << G4endl;
       UImanager->ApplyCommand(command+fileName);
       runManager->Initialize();
       physicsList->SetCutValue(10.*m,"e+");
       physicsList->SetCutValue(10.*m,"e-");
-      runManager->BeamOn(NoProtons);
+      runManager->BeamOn(std::numeric_limits<G4int>::max());
     }
   
   delete runManager;

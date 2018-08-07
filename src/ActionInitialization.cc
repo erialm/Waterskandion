@@ -3,6 +3,7 @@
 #include "PrimaryGeneratorAction.hh"
 #include "RunAction.hh"
 #include "SteppingAction.hh"
+#include "EventAction.hh"
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 ActionInitialization::ActionInitialization(G4String FilePath)
@@ -26,7 +27,9 @@ void ActionInitialization::BuildForMaster() const
 void ActionInitialization::Build() const
 {
   SetUserAction(new PrimaryGeneratorAction);
-  SetUserAction(new SteppingAction(TheRun));
+  EventAction* TheEvent = new EventAction(TheRun);
+  SetUserAction(TheEvent);
+  SetUserAction(new SteppingAction(TheEvent));
 }  
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
