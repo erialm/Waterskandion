@@ -92,8 +92,7 @@ int main(int argc,char** argv)
       runManager->Initialize();
       physicsList->SetCutValue(10.*m,"e+");
       physicsList->SetCutValue(10.*m,"e-");
-      //runManager->BeamOn(std::numeric_limits<G4int>::max());
-      runManager->BeamOn(1000000);
+      runManager->BeamOn(std::numeric_limits<G4int>::max());
     }
   
   delete runManager;
