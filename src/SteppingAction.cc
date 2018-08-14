@@ -45,6 +45,8 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
         G4int x=Touchable->GetReplicaNumber(2);
 	G4int y=Touchable->GetReplicaNumber(1);
 	G4int z=Touchable->GetReplicaNumber(0);
+        G4int ZNum=Event->GetZNum();
+        z=(ZNum-1)-z;
 	G4double EnergyDeposition=step->GetTotalEnergyDeposit();
 	Event->AddStepDose(x,y,z,EnergyDeposition);
 }

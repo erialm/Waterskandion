@@ -110,7 +110,8 @@ void RunAction::ComputeCurrentUncertainty()
         S=N*S*MeV2J/VoxelMass*NormFactor; 
 	VoxelDose*=MeV2J/VoxelMass*NormFactor;
         if (VoxelDose>0) S=S*NOSIGMA/VoxelDose*100;
-        else S=100;
+        else S=std::numeric_limits<G4double>::quiet_NaN();
+        G4cout << UncX << ' ' << UncY << ' ' << UncZ << ' ' << VoxelDose << '\n';
         G4cout << "Current uncertainty " << S << "% with tolerance " << UncTol << "% during event " << N << G4endl;
         if (S<UncTol) 
         {
@@ -141,7 +142,7 @@ void RunAction::EndOfRunAction(const G4Run*)
 
         NormFactor=ThePlan->GetNoProtons()/N; //Number of threads -1 additional primaries will be transported after current uncertainty calculation 
 	VoxelMass=Detector->GetVoxelMass();
-	for (G4int i=(ZNum-1);i>=0;--i) //start from negative since IEC is negative in the beam direction
+	for (G4int i=0;i<ZNum;++i) //start from negative since IEC is negative in the beam direction
 	{
 		for (G4int j=0;j<YNum;++j)
 		{
