@@ -111,7 +111,6 @@ void RunAction::ComputeCurrentUncertainty()
 	VoxelDose*=MeV2J/VoxelMass*NormFactor;
         if (VoxelDose>0) S=S*NOSIGMA/VoxelDose*100;
         else S=std::numeric_limits<G4double>::quiet_NaN();
-        G4cout << UncX << ' ' << UncY << ' ' << UncZ << ' ' << VoxelDose << '\n';
         G4cout << "Current uncertainty " << S << "% with tolerance " << UncTol << "% during event " << N << G4endl;
         if (S<UncTol) 
         {
