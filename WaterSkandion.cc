@@ -54,7 +54,7 @@ int main(int argc,char** argv)
  // Set user action classes
 // runManager->SetUserInitialization(new PhysicsList());
  G4PhysListFactory factory;
- G4VModularPhysicsList* physicsList = factory.GetReferencePhysList("QBBC_EMZ");
+ G4VModularPhysicsList* physicsList = factory.GetReferencePhysList("QGSP_INCLXX_EMZ");
  runManager->SetUserInitialization(physicsList);
  runManager->SetUserInitialization(new DetectorConstruction()); 
  runManager->SetUserInitialization(new ActionInitialization("../../INPUTDATA/Plan.txt"));
