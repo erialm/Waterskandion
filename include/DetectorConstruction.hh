@@ -33,6 +33,7 @@ public:
   void SetTargetDimensions(G4double Tx, G4double Ty, G4double Tz) {TargetDimensions=G4ThreeVector{Tx,Ty,Tz};}
   void SetIsoDepth(G4double Z){IsoDepth=Z;}
   void SetVoxelSize(G4double Vx, G4double Vy, G4double Vz) {VoxelSize=G4ThreeVector{Vx,Vy,Vz};}
+  void SetSnoutPosition(G4double SnoutPos) {SnoutPosition=SnoutPos;}
   G4int GetNoVoxelsX() const {return NoVoxelsX;}
   G4int GetNoVoxelsY() const {return NoVoxelsY;}
   G4int GetNoVoxelsZ() const {return NoVoxelsZ;}
@@ -45,6 +46,7 @@ private:
   G4ThreeVector	     VoxelSize;
   G4double	     VoxelMass;
   G4int 	     NoVoxelsX,NoVoxelsY,NoVoxelsZ;
+  G4double           SnoutPosition;
   
 };
 #endif

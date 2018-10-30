@@ -23,10 +23,13 @@ class DetectorConstructionMessenger: public G4UImessenger
     
   private:
     DetectorConstruction*      fDetectorConstruction;
-    G4UIdirectory*             fTopDirectory;
+    G4UIdirectory*             fTopPhantomDir;
     G4UIcmdWith3Vector*        fSetDimensionsCmd;
     G4UIcmdWithADouble*	       fSetIsoDepthCmd;
     G4UIcmdWith3Vector*	       fSetVoxelSizeCmd;
+    G4UIdirectory*             fTopSnoutDir;
+    G4UIcmdWithADouble*	       fSetSnoutPositionCmd;
+    
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

@@ -12,14 +12,17 @@ DetectorConstructionMessenger::DetectorConstructionMessenger(
                            DetectorConstruction* detectorConstruction)
  : G4UImessenger(),
    fDetectorConstruction{detectorConstruction},
-   fTopDirectory{nullptr},
+   fTopPhantomDir{nullptr},
    fSetDimensionsCmd{nullptr},
    fSetIsoDepthCmd{nullptr},
-   fSetVoxelSizeCmd{nullptr}
+   fSetVoxelSizeCmd{nullptr},
+   fTopSnoutDir{nullptr},
+   fSetSnoutPositionCmd{nullptr}
+   
    
 { 
-  fTopDirectory = new G4UIdirectory("/TargetPhantom/");
-  fTopDirectory->SetGuidance("UI for Detectorconstruction messenger");
+  fTopPhantomDir = new G4UIdirectory("/TargetPhantom/");
+  fTopPhantomDir->SetGuidance("UI for Detectorconstruction messenger");
   
 
   fSetDimensionsCmd = new G4UIcmdWith3Vector("/TargetPhantom/SetTargetDimensions",this);
@@ -36,16 +39,31 @@ DetectorConstructionMessenger::DetectorConstructionMessenger(
   fSetVoxelSizeCmd->SetGuidance("Set voxel size (mm).");
   fSetVoxelSizeCmd->SetParameterName("VoxelSizeX","VoxelSizeY","VoxelSizeZ",false);
   fSetVoxelSizeCmd->AvailableForStates(G4State_PreInit);
+  
+  fSetIsoDepthCmd = new G4UIcmdWithADouble("/TargetPhantom/SetIsoDepth",this);
+  fSetIsoDepthCmd->SetGuidance("Set isodepth for the target phantom (cm).");
+  fSetIsoDepthCmd->SetParameterName("IsoDepth",false);
+  fSetIsoDepthCmd->AvailableForStates(G4State_PreInit);
+  
+  fTopSnoutDir = new G4UIdirectory("/Snout/");
+  fTopSnoutDir->SetGuidance("UI for Detectorconstruction messenger");
+  
+  fSetSnoutPositionCmd = new G4UIcmdWithADouble("/Snout/SetSnoutPosition",this);
+  fSetSnoutPositionCmd->SetGuidance("Set snout position (cm).");
+  fSetSnoutPositionCmd->SetParameterName("SnoutPosition",false);
+  fSetSnoutPositionCmd->AvailableForStates(G4State_PreInit);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 DetectorConstructionMessenger::~DetectorConstructionMessenger()
 {
-  delete fTopDirectory;
+  delete fTopPhantomDir;
   delete fSetDimensionsCmd;
   delete fSetIsoDepthCmd;
   delete fSetVoxelSizeCmd;
+  delete fTopSnoutDir;
+  delete fSetSnoutPositionCmd;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -67,6 +85,11 @@ void DetectorConstructionMessenger::SetNewValue(G4UIcommand* command,
   {	
     G4ThreeVector VoxelSize = fSetVoxelSizeCmd->GetNew3VectorValue(newValue);
     fDetectorConstruction->SetVoxelSize(VoxelSize.x(),VoxelSize.y(),VoxelSize.z());
+  }
+  else if (command == fSetSnoutPositionCmd) 
+  {	
+    G4double SnoutPosition = fSetSnoutPositionCmd->GetNewDoubleValue(newValue);
+    fDetectorConstruction->SetSnoutPosition(SnoutPosition*cm);
   }
 }
 

@@ -7,12 +7,13 @@
 #include "G4PVReplica.hh"
 #include "G4PVParameterised.hh"
 #include "NestedParameterisation.hh"
+#include "G4RotationMatrix.hh"
 #include <stdexcept>
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 DetectorConstruction::DetectorConstruction(G4double TX, G4double TY, G4double TZ, G4double PZ, G4double VX, G4double VY, G4double VZ)
 :G4VUserDetectorConstruction(), TargetDimensions{TX,TY,TZ}, Messenger{this}, IsoDepth{PZ}, 
-VoxelSize{VX,VY,VZ},VoxelMass{0.},NoVoxelsX{0},NoVoxelsY{0},NoVoxelsZ{0}
+VoxelSize{VX,VY,VZ},VoxelMass{0.},NoVoxelsX{0},NoVoxelsY{0},NoVoxelsZ{0}, SnoutPosition{-1.}
 {}  
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -32,8 +33,8 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   //ISOCENTER AT WORLD ORIGIN
 
   // WORLD VOLUME
-  G4double worldSizeX  = TargetDimensions.x()*2*cm;
-  G4double worldSizeY  = TargetDimensions.y()*2*cm;
+  G4double worldSizeX  = 150*cm;
+  G4double worldSizeY  = 150*cm;
   G4double worldSizeZ  = 150*cm;	//fixed depth; should be enough for proton transport from nozzle exit	
 
   G4VSolid* solidWorld = new G4Box("World",         //its name
@@ -119,6 +120,41 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
                           kUndefined,        // Are placed along this axis 
                           NoVoxelsZ,         // Number of cells
                           Parameterisation);  // Parameterisation.
+  if (SnoutPosition!=-1.)
+  {
+        std::ifstream PlanFile{"../../INPUTDATA/Plan.txt"};
+	G4String GantryString;
+        G4String LayerString;
+	G4int GantryNumber;
+        G4double Energy;
+        G4double GantryAngle;
+        PlanFile>>GantryString>>GantryNumber;
+        PlanFile>>LayerString>>Energy>>GantryAngle;
+        GantryAngle=GantryAngle*deg;
+        G4Material* Lexan = man->FindOrBuildMaterial("G4_POLYCARBONATE");
+        G4double RangeShifterZ = 3.11*cm;
+        G4VSolid* solidRangeShifter = new G4Box("RangeShifter",         //its name
+                          20*cm,
+                          20*cm,
+                          RangeShifterZ/2);  //its size
+
+        G4LogicalVolume* logicRangeShifter = new G4LogicalVolume(solidRangeShifter,  //its solid
+                                    Lexan,  //its material
+                                    "RangeShifter");    //its name
+
+        G4RotationMatrix* Rotation = new G4RotationMatrix;
+        Rotation->rotateY(-GantryAngle);
+        G4VPhysicalVolume* physiRangeShifter = new G4PVPlacement(Rotation,      //Rotation
+                                  G4ThreeVector(std::sin(GantryAngle)*SnoutPosition,0,std::cos(GantryAngle)*SnoutPosition),  //at (0,0,0)
+                                  logicRangeShifter,    //its logical volume
+                                  "RangeShifter",
+                                  logicWorld,      //its mother  volume
+                                  false,      //no boolean operation
+                                  0,
+                                  false);
+
+        
+  }
 
   return physiWorld;
 }
