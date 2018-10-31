@@ -39,6 +39,8 @@ public:
   G4int GetNoVoxelsZ() const {return NoVoxelsZ;}
   G4double GetVoxelMass() const {return VoxelMass;} 
   G4double GetDepth(G4int Voxel) const {return VoxelSize.z()/2+Voxel*VoxelSize.z();}                         
+  G4ThreeVector GetVoxelSize() const {return VoxelSize;}
+  G4ThreeVector GetTargetDimensions() const {return TargetDimensions;}
 private:
   G4ThreeVector      TargetDimensions;
   DetectorConstructionMessenger Messenger;

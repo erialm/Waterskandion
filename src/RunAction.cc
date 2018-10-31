@@ -128,13 +128,35 @@ void RunAction::EndOfRunAction(const G4Run*)
 
 	ofstream DoseMatrix{"../../OUTPUTDATA/DoseMatrix.dat",ofstream::binary};
 	ofstream DoseUncertainty{"../../OUTPUTDATA/DoseUncertainty.dat",ofstream::binary};
+	G4ThreeVector TargetDim=Detector->GetTargetDimensions();
+	G4ThreeVector VoxelSize=Detector->GetVoxelSize();
+	G4double XCorner=-(TargetDim.x()/2*cm-VoxelSize.x()*mm/2);
+	G4double YCorner=TargetDim.y()/2*cm-VoxelSize.y()*mm/2;
+	G4double ZCorner=VoxelSize.z()*mm/2;
+	
+	G4double XSize=VoxelSize.x();
+	G4double YSize=VoxelSize.y();
+	G4double ZSize=VoxelSize.z();
+	
 	DoseMatrix.write(reinterpret_cast<char*>(&XNum),sizeof(G4int));
+	DoseMatrix.write(reinterpret_cast<char*>(&XCorner),sizeof(G4double));
+	DoseMatrix.write(reinterpret_cast<char*>(&XSize),sizeof(G4double));
 	DoseMatrix.write(reinterpret_cast<char*>(&YNum),sizeof(G4int));
+	DoseMatrix.write(reinterpret_cast<char*>(&YCorner),sizeof(G4double));
+	DoseMatrix.write(reinterpret_cast<char*>(&YSize),sizeof(G4double));
 	DoseMatrix.write(reinterpret_cast<char*>(&ZNum),sizeof(G4int));
+	DoseMatrix.write(reinterpret_cast<char*>(&ZCorner),sizeof(G4double));
+	DoseMatrix.write(reinterpret_cast<char*>(&ZSize),sizeof(G4double));
 	
 	DoseUncertainty.write(reinterpret_cast<char*>(&XNum),sizeof(G4int));
+	DoseUncertainty.write(reinterpret_cast<char*>(&XCorner),sizeof(G4double));
+	DoseUncertainty.write(reinterpret_cast<char*>(&XSize),sizeof(G4double));
 	DoseUncertainty.write(reinterpret_cast<char*>(&YNum),sizeof(G4int));
+	DoseUncertainty.write(reinterpret_cast<char*>(&YCorner),sizeof(G4double));
+	DoseUncertainty.write(reinterpret_cast<char*>(&YSize),sizeof(G4double));
 	DoseUncertainty.write(reinterpret_cast<char*>(&ZNum),sizeof(G4int));
+	DoseUncertainty.write(reinterpret_cast<char*>(&ZCorner),sizeof(G4double));
+	DoseUncertainty.write(reinterpret_cast<char*>(&ZSize),sizeof(G4double));
         
 	G4double S, DoseSquare, VoxelDose=-1, VoxelMass=0;
         G4cout << "Simulated " << N << " primaries.\n";

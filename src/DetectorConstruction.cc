@@ -133,6 +133,8 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
         GantryAngle=GantryAngle*deg;
         G4Material* Lexan = man->FindOrBuildMaterial("G4_POLYCARBONATE");
         G4double RangeShifterZ = 3.11*cm;
+	G4double SnoutPositionToRSFace=4.5*cm;
+	SnoutPosition=SnoutPosition-SnoutPositionToRSFace+RangeShifterZ/2;
         G4VSolid* solidRangeShifter = new G4Box("RangeShifter",         //its name
                           20*cm,
                           20*cm,
