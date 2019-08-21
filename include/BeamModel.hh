@@ -24,7 +24,8 @@ public:
 	G4ThreeVector Direction;
     };
     void ComputeStartingEnergies();	
-    void ComputeOpticalParameters();	
+    void ComputePrimaryOpticalParameters();	
+    void ComputeSecondaryOpticalParameters();	
     void ComputeBaseSpotParameters();
     void ComputeEnergySpread();
     
@@ -32,10 +33,18 @@ public:
     G4double GetA0X(G4int LayerNum) const {return Optical[LayerNum].A0X;}
     G4double GetA1X(G4int LayerNum) const {return Optical[LayerNum].A1X;}
     G4double GetA2X(G4int LayerNum) const {return Optical[LayerNum].A2X;}
+    
+    G4double GetSecA0X(G4int LayerNum) const {return OpticalSec[LayerNum].A0X;}
+    G4double GetSecA1X(G4int LayerNum) const {return OpticalSec[LayerNum].A1X;}
+    G4double GetSecA2X(G4int LayerNum) const {return OpticalSec[LayerNum].A2X;}
 
     G4double GetA0Y(G4int LayerNum) const {return Optical[LayerNum].A0Y;}
     G4double GetA1Y(G4int LayerNum) const {return Optical[LayerNum].A1Y;}
     G4double GetA2Y(G4int LayerNum) const {return Optical[LayerNum].A2Y;}
+    
+    G4double GetSecA0Y(G4int LayerNum) const {return OpticalSec[LayerNum].A0Y;}
+    G4double GetSecA1Y(G4int LayerNum) const {return OpticalSec[LayerNum].A1Y;}
+    G4double GetSecA2Y(G4int LayerNum) const {return OpticalSec[LayerNum].A2Y;}
 
     G4double GetBaseX(G4int LayerNum, G4int SpotNum) const {return BaseSpot[LayerNum][SpotNum].Position.getX();}
     G4double GetBaseTheta(G4int LayerNum, G4int SpotNum) const {return BaseSpot[LayerNum][SpotNum].Direction.getX();}
@@ -45,6 +54,7 @@ public:
     G4double GetBasePsi(G4int LayerNum, G4int SpotNum) const {return BaseSpot[LayerNum][SpotNum].Direction.getZ();}
     G4double GetNozzleExit() const {return NozzleExit;}
     G4double GetEnergySpread(G4int LayerNum) const {return EnergySpreads[LayerNum];}
+    G4double GetSecondaryWeight(G4int LayerNum) const {return Weights[LayerNum];}
 
 private:
     static constexpr G4double NozzleExit=538.91;
@@ -53,8 +63,10 @@ private:
 
     std::vector<G4double> SimStartEnergies;
     std::vector<OpticalParameters> Optical;
+    std::vector<OpticalParameters> OpticalSec;
     std::vector<std::vector<BaseSpotParameters>> BaseSpot;
     std::vector<G4double> EnergySpreads;
+    std::vector<G4double> Weights;
 
     ProtonPlan* ThePlan;
 };

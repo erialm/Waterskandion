@@ -16,7 +16,8 @@ BeamModel::BeamModel(ProtonPlan* Plan)
 	}
 	ComputeStartingEnergies();	
 	ComputeEnergySpread();
-	ComputeOpticalParameters();	
+	ComputePrimaryOpticalParameters();	
+	ComputeSecondaryOpticalParameters();	
 	ComputeBaseSpotParameters();
 }
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -53,13 +54,13 @@ void BeamModel::ComputeEnergySpread()
 		
 }
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-void BeamModel::ComputeOpticalParameters()
+void BeamModel::ComputePrimaryOpticalParameters()
 {
 
 	//THIS USES INTERPOLATION OF THE PARAMETERS, RATHER THAN FITTING; CHANGE AT SOME POINT OR KEEP?
 	using std::vector;
 	std::ifstream ParametersFile{"../../INPUTDATA/MergedPara.txt"};
-	if (!ParametersFile) throw std::runtime_error("Could not open optical parameters data file!");
+	if (!ParametersFile) throw std::runtime_error("Could not open primary optical parameters data file!");
 	G4double EEnt,A0XEnt,A1XEnt,A2XEnt,A0YEnt,A1YEnt,A2YEnt;
 	vector<G4double> Energy;
 	vector<G4double> A0X;	//A0 = variance of angular distribution
@@ -101,6 +102,64 @@ void BeamModel::ComputeOpticalParameters()
 		Entry.A1Y=A1YInt(LayerEnergy);
 		Entry.A2Y=A2YInt(LayerEnergy);
 		Optical.push_back(Entry);	
+	}
+	
+}
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+void BeamModel::ComputeSecondaryOpticalParameters()
+{
+
+	//THIS USES INTERPOLATION OF THE PARAMETERS, RATHER THAN FITTING; CHANGE AT SOME POINT OR KEEP?
+	using std::vector;
+	std::ifstream ParametersFile{"../../INPUTDATA/MergedPara2.txt"};
+	if (!ParametersFile) throw std::runtime_error("Could not open secondary optical parameters data file!");
+	G4double EEnt,WEnt,A0XEnt,A1XEnt,A2XEnt,A0YEnt,A1YEnt,A2YEnt;
+	vector<G4double> Energy;
+	vector<G4double> Weight;
+	vector<G4double> A0X;	//A0 = variance of angular distribution
+	vector<G4double> A1X;	//A1 = correlation of angular and spatial distributions
+	vector<G4double> A2X;	//A2 = variance of spatial distribution
+	vector<G4double> A0Y;
+	vector<G4double> A1Y;
+	vector<G4double> A2Y;
+
+	while(ParametersFile>>EEnt>>WEnt>>A0XEnt>>A1XEnt>>A2XEnt>>A0YEnt>>A1YEnt>>A2YEnt)
+	{
+		Energy.push_back(EEnt);		//MeV at nozzle exit
+		Weight.push_back(WEnt);		//Weight of secondary Gaussian
+		A0X.push_back(A0XEnt);	//rad
+		A1X.push_back(A1XEnt);	//mm*rad
+		A2X.push_back(A2XEnt);	//mm	
+		A0Y.push_back(A0YEnt);
+		A1Y.push_back(A1YEnt);
+		A2Y.push_back(A2YEnt);
+		
+	}
+
+	c2p WeightInt=c2.interpolating_function().load(Energy, Weight,true,0,true,0,false);//false=linear interpolation
+	c2p A0XInt=c2.interpolating_function().load(Energy, A0X,true,0,true,0,false);//false=linear interpolation
+	c2p A1XInt=c2.interpolating_function().load(Energy, A1X,true,0,true,0,false);
+	c2p A2XInt=c2.interpolating_function().load(Energy, A2X,true,0,true,0,false);
+	c2p A0YInt=c2.interpolating_function().load(Energy, A0Y,true,0,true,0,false);
+	c2p A1YInt=c2.interpolating_function().load(Energy, A1Y,true,0,true,0,false);
+	c2p A2YInt=c2.interpolating_function().load(Energy, A2Y,true,0,true,0,false);
+
+
+	OpticalParameters Entry;
+	G4double LayerEnergy, SecGaussWeight;
+	for (G4int i=0;i<ThePlan->GetNoLayers();++i)
+	{
+		LayerEnergy=SimStartEnergies[i];	
+                SecGaussWeight=WeightInt(LayerEnergy);
+                Weights.push_back(SecGaussWeight);
+		Entry.A0X=A0XInt(LayerEnergy);
+		Entry.A1X=A1XInt(LayerEnergy);
+		Entry.A2X=A2XInt(LayerEnergy);
+		Entry.A0Y=A0YInt(LayerEnergy);
+		Entry.A1Y=A1YInt(LayerEnergy);
+		Entry.A2Y=A2YInt(LayerEnergy);
+		OpticalSec.push_back(Entry);	
 	}
 	
 }
