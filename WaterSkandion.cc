@@ -28,9 +28,23 @@
 #include "G4PhysListFactory.hh"
 #include "G4VModularPhysicsList.hh"
 #include <limits>
-
+#include <csignal>
 
 //=================================================================================
+#ifdef G4MULTITHREADED
+  void SignalHandling(G4int Signal)
+  {
+          G4cout << "Interrupt signal " << Signal << " recieved.\n";
+          G4MTRunManager::GetMasterRunManager()->AbortRun(true);
+  }
+#else
+  void SignalHandling(G4int Signal)
+  {
+          G4cout << "Interrupt signal " << Signal << " recieved.\n";
+          G4RunManager::GetRunManager()->AbortRun(true);
+          delete RunManager;
+  }
+#endif
 
 int main(int argc,char** argv)
 {
@@ -45,6 +59,7 @@ int main(int argc,char** argv)
   runManager->SetNumberOfThreads(NoThreads);
   G4cout << "\n\n\tRunning in multithreaded mode with " << NoThreads
          << " threads\n\n" << G4endl;
+
 #else
   G4RunManager* runManager = new G4RunManager;
   G4cout << "\n\n\tRunning in serial mode\n\n" << G4endl; 
@@ -59,7 +74,7 @@ int main(int argc,char** argv)
  runManager->SetUserInitialization(new DetectorConstruction()); 
  runManager->SetUserInitialization(new ActionInitialization("../../INPUTDATA/Plan.txt"));
    
-  
+ std::signal(SIGINT, SignalHandling);  
 #ifdef G4VIS_USE
   // visualisation manager
   G4VisManager* visManager = new G4VisExecutive;
@@ -103,4 +118,3 @@ int main(int argc,char** argv)
   
   return 0;
 }
-
