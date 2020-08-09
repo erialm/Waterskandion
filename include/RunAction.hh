@@ -10,6 +10,9 @@
 #include "G4ThreeVector.hh"
 #include "EventAction.hh"
 #include "RunActionMessenger.hh"
+#include <fstream>
+#include "G4RunManager.hh"
+#include "G4MTRunManager.hh"
 class RunAction : public G4UserRunAction
 {
   public:
@@ -28,6 +31,7 @@ class RunAction : public G4UserRunAction
     void SetTolerance(G4double Tolerance) {UncTol=Tolerance;}
     void SetDepth(G4double Depth) {UncDepth=Depth;}
     void ComputeCurrentUncertainty();
+    void PrepareOutputStream(std::ofstream&);
  private:
     static constexpr G4double MeV2J=1.60217662e-13;
     ProtonPlan* ThePlan;
@@ -42,6 +46,11 @@ class RunAction : public G4UserRunAction
     G4double UncTol;
     G4int N;
     RunActionMessenger Messenger;
+    #ifdef G4MULTITHREADED	
+    G4MTRunManager* RunManager;
+    #else
+    G4RunManager* RunManager;
+    #endif
 };
 
 #endif

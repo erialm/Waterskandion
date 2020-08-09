@@ -23,6 +23,8 @@
 SteppingAction::SteppingAction(EventAction* TheEvent)
 : G4UserSteppingAction(), Voxel{nullptr}, Event{TheEvent}
 {
+		G4LogicalVolumeStore* LogicStore=G4LogicalVolumeStore::GetInstance();
+		Voxel=LogicStore->GetVolume("Voxel");
 }
 
 //....oooOO0OOo§oo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -34,11 +36,6 @@ SteppingAction::~SteppingAction()
 
 void SteppingAction::UserSteppingAction(const G4Step* step)
 {
-	if (!Voxel)
-	{
-		G4LogicalVolumeStore* LogicStore=G4LogicalVolumeStore::GetInstance();
-		Voxel=LogicStore->GetVolume("Voxel");
-	}
 	G4LogicalVolume* CurrentVolume=step->GetTrack()->GetVolume()->GetLogicalVolume();
 	if (CurrentVolume!=Voxel) return;	//Don't do anything if particle is not in target volume
 	G4TouchableHandle Touchable = step->GetPreStepPoint()->GetTouchableHandle();

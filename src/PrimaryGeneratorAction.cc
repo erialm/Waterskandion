@@ -51,9 +51,10 @@ void PrimaryGeneratorAction::SampleSpotParameters(G4int LayerNumber, G4int SpotN
 	
 	G4double A0X, A1X, A2X, X, Angle, AngleTheta, NTheta, BaseTheta, AnglePsi, BasePsi, NPsi;
 	G4double GantryAngle=ThePlan->GetGantryAngle(LayerNumber);
-        G4double Weight=TheModel->GetSecondaryWeight(LayerNumber);
+        //G4double Weight=TheModel->GetSecondaryWeight(LayerNumber);
+        G4double Weight=1.0;
         G4double RandNumber=G4RandFlat::shoot(0.,1.);
-        if (RandNumber>Weight)
+        if (RandNumber<Weight)
         {       
                 A0X=TheModel->GetA0X(LayerNumber);
 	        A1X=TheModel->GetA1X(LayerNumber);
@@ -82,7 +83,7 @@ void PrimaryGeneratorAction::SampleSpotParameters(G4int LayerNumber, G4int SpotN
 	SampledParameters.Psi=NPsi;
 
 	G4double A0Y, A1Y, A2Y, Y, Phi, NPhi, BasePhi;
-        if (RandNumber>Weight)
+        if (RandNumber<Weight)
 	
         {
                 A0Y=TheModel->GetA0Y(LayerNumber);

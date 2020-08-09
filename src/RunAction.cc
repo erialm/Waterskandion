@@ -16,7 +16,6 @@
 #include "G4UnitsTable.hh"
 #include "G4SystemOfUnits.hh"
 #include "globals.hh"
-#include <fstream>
 #include <cmath>
 #include "G4NistManager.hh"
 #include "G4Proton.hh"
@@ -45,9 +44,9 @@ void RunAction::BeginOfRunAction(const G4Run*)
 {
         G4cout << "Running until uncertainty is below " << UncTol << "% at approximately " << UncDepth << " cm depth." << G4endl;  
 	#ifdef G4MULTITHREADED	
-	G4MTRunManager* RunManager=G4MTRunManager::GetMasterRunManager();
+        RunManager=G4MTRunManager::GetMasterRunManager();
 	#else
-	G4RunManager* RunManager=G4RunManager::GetRunManager();
+	RunManager=G4RunManager::GetRunManager();
 	#endif
 	const DetectorConstruction* Detector = static_cast<const DetectorConstruction*> (RunManager->GetUserDetectorConstruction()); //get DetectorConstruction; need to recast since RunManager will return G4VUserDetectorConstruction pointer only		
 	XNum=Detector->GetNoVoxelsX();
@@ -95,11 +94,6 @@ void RunAction::AddEventDose(const G4int x, const G4int y, const G4int z, const 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 void RunAction::ComputeCurrentUncertainty()
 {
-        #ifdef G4MULTITHREADED	
-	G4MTRunManager* RunManager=G4MTRunManager::GetMasterRunManager();
-	#else
-        G4RunManager* RunManager=G4RunManager::GetRunManager();
-	#endif
 	const DetectorConstruction* Detector = static_cast<const DetectorConstruction*> (RunManager->GetUserDetectorConstruction());
 	G4double VoxelMass=Detector->GetVoxelMass();
 	G4double VoxelDose=DoseSpectrum[UncX][UncY][UncZ][0];
@@ -118,45 +112,43 @@ void RunAction::ComputeCurrentUncertainty()
         }
 }
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+void RunAction::PrepareOutputStream(std::ofstream& DoseMatrix)
+{
+     const DetectorConstruction* Detector = static_cast<const DetectorConstruction*> (RunManager->GetUserDetectorConstruction());
+     G4ThreeVector TargetDim=Detector->GetTargetDimensions();
+     G4ThreeVector VoxelSize=Detector->GetVoxelSize();
+     G4double XCorner=-(TargetDim.x()/2*cm-VoxelSize.x()*mm/2);
+     G4double YCorner=TargetDim.y()/2*cm-VoxelSize.y()*mm/2;
+     G4double ZCorner=VoxelSize.z()*mm/2;
+
+     G4double XSize=VoxelSize.x();
+     G4double YSize=VoxelSize.y();
+     G4double ZSize=VoxelSize.z();
+
+     DoseMatrix.write(reinterpret_cast<char*>(&XNum),sizeof(G4int));
+     DoseMatrix.write(reinterpret_cast<char*>(&XCorner),sizeof(G4double));
+     DoseMatrix.write(reinterpret_cast<char*>(&XSize),sizeof(G4double));
+     DoseMatrix.write(reinterpret_cast<char*>(&YNum),sizeof(G4int));
+     DoseMatrix.write(reinterpret_cast<char*>(&YCorner),sizeof(G4double));
+     DoseMatrix.write(reinterpret_cast<char*>(&YSize),sizeof(G4double));
+     DoseMatrix.write(reinterpret_cast<char*>(&ZNum),sizeof(G4int));
+     DoseMatrix.write(reinterpret_cast<char*>(&ZCorner),sizeof(G4double));
+     DoseMatrix.write(reinterpret_cast<char*>(&ZSize),sizeof(G4double));
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 void RunAction::EndOfRunAction(const G4Run*)
 {
 	using std::ofstream;
 	using std::pow;
 	using std::sqrt;
-	G4RunManager* RunManager=G4RunManager::GetRunManager();
 	const DetectorConstruction* Detector = static_cast<const DetectorConstruction*> (RunManager->GetUserDetectorConstruction());
 
 	ofstream DoseMatrix{"../../OUTPUTDATA/DoseMatrix.dat",ofstream::binary};
 	ofstream DoseUncertainty{"../../OUTPUTDATA/DoseUncertainty.dat",ofstream::binary};
-	G4ThreeVector TargetDim=Detector->GetTargetDimensions();
-	G4ThreeVector VoxelSize=Detector->GetVoxelSize();
-	G4double XCorner=-(TargetDim.x()/2*cm-VoxelSize.x()*mm/2);
-	G4double YCorner=TargetDim.y()/2*cm-VoxelSize.y()*mm/2;
-	G4double ZCorner=VoxelSize.z()*mm/2;
-	
-	G4double XSize=VoxelSize.x();
-	G4double YSize=VoxelSize.y();
-	G4double ZSize=VoxelSize.z();
-	
-	DoseMatrix.write(reinterpret_cast<char*>(&XNum),sizeof(G4int));
-	DoseMatrix.write(reinterpret_cast<char*>(&XCorner),sizeof(G4double));
-	DoseMatrix.write(reinterpret_cast<char*>(&XSize),sizeof(G4double));
-	DoseMatrix.write(reinterpret_cast<char*>(&YNum),sizeof(G4int));
-	DoseMatrix.write(reinterpret_cast<char*>(&YCorner),sizeof(G4double));
-	DoseMatrix.write(reinterpret_cast<char*>(&YSize),sizeof(G4double));
-	DoseMatrix.write(reinterpret_cast<char*>(&ZNum),sizeof(G4int));
-	DoseMatrix.write(reinterpret_cast<char*>(&ZCorner),sizeof(G4double));
-	DoseMatrix.write(reinterpret_cast<char*>(&ZSize),sizeof(G4double));
-	
-	DoseUncertainty.write(reinterpret_cast<char*>(&XNum),sizeof(G4int));
-	DoseUncertainty.write(reinterpret_cast<char*>(&XCorner),sizeof(G4double));
-	DoseUncertainty.write(reinterpret_cast<char*>(&XSize),sizeof(G4double));
-	DoseUncertainty.write(reinterpret_cast<char*>(&YNum),sizeof(G4int));
-	DoseUncertainty.write(reinterpret_cast<char*>(&YCorner),sizeof(G4double));
-	DoseUncertainty.write(reinterpret_cast<char*>(&YSize),sizeof(G4double));
-	DoseUncertainty.write(reinterpret_cast<char*>(&ZNum),sizeof(G4int));
-	DoseUncertainty.write(reinterpret_cast<char*>(&ZCorner),sizeof(G4double));
-	DoseUncertainty.write(reinterpret_cast<char*>(&ZSize),sizeof(G4double));
+
+        PrepareOutputStream(DoseMatrix);
+        PrepareOutputStream(DoseUncertainty);
         
 	G4double S, DoseSquare, VoxelDose=-1, VoxelMass=0;
         G4cout << "Simulated " << N << " primaries.\n";

@@ -59,6 +59,11 @@ void EventAction::BeginOfEventAction(const G4Event*)
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 void EventAction::EndOfEventAction(const G4Event*)
 {   
+        if (DosePositions.size()==0) 
+        {
+                TheRun->AddEventDose(0,0,0,0,true);
+                return;
+        }
         G4int X, Y, Z;
         G4bool LastElement;
         for (size_t i=0;i<DosePositions.size();++i)
