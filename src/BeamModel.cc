@@ -12,7 +12,7 @@ BeamModel::BeamModel(ProtonPlan* Plan)
 	BaseSpot.resize(NoLayers);
 	for (G4int i=0;i<NoLayers;++i)
 	{
-		BaseSpot[i].resize(ThePlan->GetNoSpots(i));	
+	    BaseSpot[i].resize(ThePlan->GetNoSpots(i));	
 	}
 	ComputeStartingEnergies();	
 	ComputeEnergySpread();
@@ -31,10 +31,9 @@ void BeamModel::ComputeStartingEnergies()
 	G4double EnergyEntry;
 	while (EnergyFile>>EnergyEntry)
 	{
-		NozzleEnergy.push_back(EnergyEntry);
+	    NozzleEnergy.push_back(EnergyEntry);
 		IsoEnergy.push_back(std::floor(EnergyEntry));
 	}
-
 	c2p Iso2NozzleExit=c2.interpolating_function().load(IsoEnergy,NozzleEnergy,true,0,true,0,true);
 	for (G4int i=0;i<ThePlan->GetNoLayers();++i) SimStartEnergies.push_back(Iso2NozzleExit(ThePlan->GetLayerEnergy(i)));
 
@@ -46,7 +45,7 @@ void BeamModel::ComputeEnergySpread()
 	G4double E,EnergySpread;
 	for (G4int i=0;i<ThePlan->GetNoLayers();++i)
 	{
-		E=SimStartEnergies[i];
+	    E=SimStartEnergies[i];
 		EnergySpread=-4.6926e-07*pow(E,3)+1.5883e-04*pow(E,2)-1.1689e-02*E+7.2174e-01;
 		EnergySpreads.push_back(EnergySpread);
 	}

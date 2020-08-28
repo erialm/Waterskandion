@@ -51,21 +51,21 @@ void PrimaryGeneratorAction::SampleSpotParameters(G4int LayerNumber, G4int SpotN
 	
 	G4double A0X, A1X, A2X, X, Angle, AngleTheta, NTheta, BaseTheta, AnglePsi, BasePsi, NPsi;
 	G4double GantryAngle=ThePlan->GetGantryAngle(LayerNumber);
-        //G4double Weight=TheModel->GetSecondaryWeight(LayerNumber);
-        G4double Weight=1.0;
-        G4double RandNumber=G4RandFlat::shoot(0.,1.);
-        if (RandNumber<Weight)
-        {       
-                A0X=TheModel->GetA0X(LayerNumber);
-	        A1X=TheModel->GetA1X(LayerNumber);
-	        A2X=TheModel->GetA2X(LayerNumber);
-        }
-        else
-        {
-                A0X=TheModel->GetSecA0X(LayerNumber);
-                A1X=TheModel->GetSecA1X(LayerNumber);
-                A2X=TheModel->GetSecA2X(LayerNumber);
-        }
+    //G4double Weight=TheModel->GetSecondaryWeight(LayerNumber);
+    G4double Weight=1.0;
+    G4double RandNumber=G4RandFlat::shoot(0.,1.);
+    if (RandNumber<Weight)
+    {       
+        A0X=TheModel->GetA0X(LayerNumber);
+	    A1X=TheModel->GetA1X(LayerNumber);
+	    A2X=TheModel->GetA2X(LayerNumber);
+    }
+    else
+    {
+        A0X=TheModel->GetSecA0X(LayerNumber);
+        A1X=TheModel->GetSecA1X(LayerNumber);
+        A2X=TheModel->GetSecA2X(LayerNumber);
+    }
 	X=G4RandGauss::shoot(0.,1.);
 	Angle=G4RandGauss::shoot(0.,1.);
 	Angle=(A1X*X+sqrt(A2X*A0X-pow(A1X,2))*Angle)/sqrt(A2X); //sample from bivariate Gaussian using Cholesky decomposition
@@ -83,19 +83,18 @@ void PrimaryGeneratorAction::SampleSpotParameters(G4int LayerNumber, G4int SpotN
 	SampledParameters.Psi=NPsi;
 
 	G4double A0Y, A1Y, A2Y, Y, Phi, NPhi, BasePhi;
-        if (RandNumber<Weight)
-	
-        {
-                A0Y=TheModel->GetA0Y(LayerNumber);
-	        A1Y=TheModel->GetA1Y(LayerNumber);
-	        A2Y=TheModel->GetA2Y(LayerNumber);
-        }
-        else
-        {
-                A0Y=TheModel->GetSecA0Y(LayerNumber);
-	        A1Y=TheModel->GetSecA1Y(LayerNumber);
-	        A2Y=TheModel->GetSecA2Y(LayerNumber);
-        }
+    if (RandNumber<Weight)
+    {
+        A0Y=TheModel->GetA0Y(LayerNumber);
+	    A1Y=TheModel->GetA1Y(LayerNumber);
+	    A2Y=TheModel->GetA2Y(LayerNumber);
+    }
+    else
+    {
+        A0Y=TheModel->GetSecA0Y(LayerNumber);
+	    A1Y=TheModel->GetSecA1Y(LayerNumber);
+	    A2Y=TheModel->GetSecA2Y(LayerNumber);
+    }
 	Y=G4RandGauss::shoot(0.,1.);
 	Phi=G4RandGauss::shoot(0.,1.);
 	Phi=(A1Y*Y+sqrt(A2Y*A0Y-pow(A1Y,2))*Phi)/sqrt(A2Y);

@@ -15,7 +15,7 @@ class EventAction : public G4UserEventAction
 
     virtual void BeginOfEventAction(const G4Event* event);
     virtual void EndOfEventAction(const G4Event* event);
-    void AddStepDose(G4int, G4int, G4int, G4double);
+    void AddStepDose(const G4int, const G4int, const G4int,const G4double);
     G4int GetZNum() const {return ZNum;}
   private:
     RunAction* TheRun;

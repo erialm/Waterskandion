@@ -19,17 +19,17 @@ ActionInitialization::~ActionInitialization()
 
 void ActionInitialization::BuildForMaster() const
 {
-  SetUserAction(TheRun);
+    SetUserAction(TheRun);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void ActionInitialization::Build() const
 {
-  SetUserAction(new PrimaryGeneratorAction);
-  EventAction* TheEvent = new EventAction(TheRun);
-  SetUserAction(TheEvent);
-  SetUserAction(new SteppingAction(TheEvent));
+    SetUserAction(new PrimaryGeneratorAction);
+    EventAction* TheEvent = new EventAction(TheRun);
+    SetUserAction(TheEvent);
+    SetUserAction(new SteppingAction(TheEvent));
 }  
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

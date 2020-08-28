@@ -42,9 +42,9 @@ RunAction::~RunAction()
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 void RunAction::BeginOfRunAction(const G4Run*)
 {
-        G4cout << "Running until uncertainty is below " << UncTol << "% at approximately " << UncDepth << " cm depth." << G4endl;  
+    G4cout << "Running until uncertainty is below " << UncTol << "% at approximately " << UncDepth << " cm depth." << G4endl;  
 	#ifdef G4MULTITHREADED	
-        RunManager=G4MTRunManager::GetMasterRunManager();
+    RunManager=G4MTRunManager::GetMasterRunManager();
 	#else
 	RunManager=G4RunManager::GetRunManager();
 	#endif
@@ -84,12 +84,13 @@ void RunAction::BeginOfRunAction(const G4Run*)
 void RunAction::AddEventDose(const G4int x, const G4int y, const G4int z, const G4double D, bool LastElement)
 {
 	G4AutoLock lock(&SteppingMutexLock);
-        DoseSpectrum[x][y][z][0]+=D;	//Dose
+    DoseSpectrum[x][y][z][0]+=D;	//Dose
 	DoseSpectrum[x][y][z][1]+=D*D; //Dose squared
-        if (LastElement)
-        {       ++N;
-                if (N%FREQUENCY==0) ComputeCurrentUncertainty(); //when this is called, DoseSpectrum may include data partially transferred by the other NoThreads-1 EventAction classes. Does not matter since the intention is to provide a decent estimate for the number of primaries transported to obtain desired uncertainty.
-        }
+    if (LastElement)
+    {       
+        ++N;
+        if (N%FREQUENCY==0) ComputeCurrentUncertainty(); //when this is called, DoseSpectrum may include data partially transferred by the other NoThreads-1 EventAction classes. Does not matter since the intention is to provide a decent estimate for the number of primaries transported to obtain desired uncertainty.
+    }
 }
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 void RunAction::ComputeCurrentUncertainty()
@@ -98,18 +99,18 @@ void RunAction::ComputeCurrentUncertainty()
 	G4double VoxelMass=Detector->GetVoxelMass();
 	G4double VoxelDose=DoseSpectrum[UncX][UncY][UncZ][0];
 	G4double DoseSquare=DoseSpectrum[UncX][UncY][UncZ][1];
-        G4double S=(DoseSquare-pow(VoxelDose,2)/N)/(N-1);
-        S=sqrt(S)/sqrt(N);	
-        NormFactor=ThePlan->GetNoProtons()/N;
-        S=N*S*MeV2J/VoxelMass*NormFactor; 
+    G4double S=(DoseSquare-pow(VoxelDose,2)/N)/(N-1);
+    S=sqrt(S)/sqrt(N);	
+    NormFactor=ThePlan->GetNoProtons()/N;
+    S=N*S*MeV2J/VoxelMass*NormFactor; 
 	VoxelDose*=MeV2J/VoxelMass*NormFactor;
-        if (VoxelDose>0) S=S*NOSIGMA/VoxelDose*100;
-        else S=std::numeric_limits<G4double>::quiet_NaN();
-        G4cout << "Current uncertainty " << S << "% with tolerance " << UncTol << "% during event " << N << G4endl;
-        if (S<UncTol) 
-        {
-                RunManager->AbortRun(true);
-        }
+    if (VoxelDose>0) S=S*NOSIGMA/VoxelDose*100;
+    else S=std::numeric_limits<G4double>::quiet_NaN();
+    G4cout << "Current uncertainty " << S << "% with tolerance " << UncTol << "% during event " << N << G4endl;
+    if (S<UncTol) 
+    {
+        RunManager->AbortRun(true);
+    }
 }
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 void RunAction::PrepareOutputStream(std::ofstream& DoseMatrix)
@@ -118,7 +119,7 @@ void RunAction::PrepareOutputStream(std::ofstream& DoseMatrix)
      G4ThreeVector TargetDim=Detector->GetTargetDimensions();
      G4ThreeVector VoxelSize=Detector->GetVoxelSize();
      G4double XCorner=-(TargetDim.x()/2*cm-VoxelSize.x()*mm/2);
-     G4double YCorner=TargetDim.y()/2*cm-VoxelSize.y()*mm/2;
+     G4double YCorner=-(TargetDim.y()/2*cm-VoxelSize.y()*mm/2);
      G4double ZCorner=VoxelSize.z()*mm/2;
 
      G4double XSize=VoxelSize.x();
@@ -147,13 +148,13 @@ void RunAction::EndOfRunAction(const G4Run*)
 	ofstream DoseMatrix{"../../OUTPUTDATA/DoseMatrix.dat",ofstream::binary};
 	ofstream DoseUncertainty{"../../OUTPUTDATA/DoseUncertainty.dat",ofstream::binary};
 
-        PrepareOutputStream(DoseMatrix);
-        PrepareOutputStream(DoseUncertainty);
+    PrepareOutputStream(DoseMatrix);
+    PrepareOutputStream(DoseUncertainty);
         
 	G4double S, DoseSquare, VoxelDose=-1, VoxelMass=0;
-        G4cout << "Simulated " << N << " primaries.\n";
+    G4cout << "Simulated " << N << " primaries.\n";
 
-        NormFactor=ThePlan->GetNoProtons()/N; //Number of threads -1 additional primaries will be transported after current uncertainty calculation 
+    NormFactor=ThePlan->GetNoProtons()/N; //Number of threads -1 additional primaries will be transported after current uncertainty calculation 
 	VoxelMass=Detector->GetVoxelMass();
 	for (G4int i=0;i<ZNum;++i) //start from negative since IEC is negative in the beam direction
 	{
@@ -163,15 +164,15 @@ void RunAction::EndOfRunAction(const G4Run*)
 			{	
 				VoxelDose=DoseSpectrum[k][j][i][0];
 				DoseSquare=DoseSpectrum[k][j][i][1];
-                                S=(DoseSquare-pow(VoxelDose,2)/N)/(N-1);
-                                S=sqrt(S)/sqrt(N);	//standard deviation of the mean energy deposition;
+                S=(DoseSquare-pow(VoxelDose,2)/N)/(N-1);
+                S=sqrt(S)/sqrt(N);	//standard deviation of the mean energy deposition;
 				S=N*S*MeV2J/VoxelMass*NormFactor; //Standard deviation of the total voxel dose
 				
 				VoxelDose*=MeV2J/VoxelMass*NormFactor;
 				DoseMatrix.write(reinterpret_cast<char*>(&VoxelDose),sizeof(G4double));
 				if (VoxelDose>0) S=S*NOSIGMA/VoxelDose*100;
-                                else S=std::numeric_limits<G4double>::quiet_NaN();
-                                DoseUncertainty.write(reinterpret_cast<char*>(&S),sizeof(G4double));
+                else S=std::numeric_limits<G4double>::quiet_NaN();
+                DoseUncertainty.write(reinterpret_cast<char*>(&S),sizeof(G4double));
 			}
 		}
 	}
